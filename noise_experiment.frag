@@ -16,16 +16,25 @@ float rand(in float num){
     return pow(fract(sin(num)*43758.5453123),.5);
 }
 
+float circle(vec2 pos, vec2 center, float r){
+    if(length(pos-center)<=r) return 1.;
+    return 0.;
+}
+
+float noise(float x){
+    float i = floor(x);  // integer
+    float f = fract(x);  // fraction
+    return mix(rand(i), rand(i + 1.0), smoothstep(0.,1.,f));
+}
+
 void main(){
     vec2 pos = gl_FragCoord.xy / u_resolution.y;
+
+    vec2 noise = vec2(noise(u_time),noise(noise(u_time)));
+
+    float r = .1;
     
-    float areas = 10.;
-    pos *= areas;
+    vec3 color = vec3(circle(pos,noise,r));
 
-    vec2 ipos = floor(pos);
-    vec2 fpos = fract(pos);
-
-    float color = rand(ipos);
-
-    gl_FragColor = vec4(vec3(color),1.);
+    gl_FragColor = vec4(color,1.);
 }
